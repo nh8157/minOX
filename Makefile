@@ -32,4 +32,4 @@ run:clean os-img
 	$(QEMU) os-img 
 
 clean:
-	rm -rf *.bin *.o *.dis $(OSIMG)
+	rm -rf *.bin *.o *.dis os-img **/*.bin **/*.o
