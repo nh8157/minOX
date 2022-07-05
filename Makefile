@@ -1,37 +1,35 @@
-KERNELSRC=kernel.c
-KERNELOBJ=kernel.o
-KERNELBIN=kernel.bin
-KERENTSRC=kernel_entry.asm
-KERENTOBJ=kernel_entry.o
-BOOTSRC=boot_sec.asm
-BOOTBIN=boot_sec.bin
-OSIMG=os-img
+C_SOURCES=$(wildcard kernel/*.c drivers/*.c)		# Generates a list of mapping to the C files
+OBJ=${C_SOURCES:.c=.o}								# Replaces .c file extension with .o
 
 NS=nasm
-CC=gcc -m32 -fno-PIC -ffreestanding -c
-LN=ld -no-PIE -m elf_i386 -Ttext 0x1000 --oformat binary
+NS_FLAG_32=-f elf32 -o
+NS_FLAG_BIN=-f bin -o
+CC=gcc 
+CC_FLAG=-m32 -fno-PIC -ffreestanding -c
+LN=ld 
+LN_FLAG=-no-PIE -m elf_i386 -Ttext 0x1000 --oformat binary
 QEMU=qemu-system-x86_64
 MERGER=cat
 
-all:$(OSIMG)
+all:os-img
 
-$(KERNELOBJ):$(KERNELSRC)
-	$(CC) $^ -o $@ 
+%.o:%.c
+	$(CC) $(CC_FLAG) $^	-o $@
+	
+%.o:%.asm
+	$(NS) $< $(NS_FLAG_32) $@
 
-$(KERNELBIN):$(KERNELOBJ) 
-	$(LN) $^ -o $@
+%.bin:%.asm
+	$(NS) $< $(NS_FLAG_BIN) $@
 
-$(KERENTOBJ):$(KERNELSRC)
-	$(NS) $(KERENTSRC) -f elf32 -o $(KERENTOBJ)	
+kernel.bin:boot/kernel_entry.o ${OBJ}
+	$(LN) $(LN_FLAG) $^ -o $@
 
-$(BOOTBIN):$(BOOTSRC)
-	$(NS) $(BOOTSRC) -f bin -o $(BOOTBIN)
+os-img:boot/boot_sec.bin kernel.bin
+	cat $^ > os-img
 
-$(OSIMG):$(BOOTBIN) $(KERNELBIN)
-	$(MERGER) $(BOOTBIN) $(KERNELBIN) > $(OSIMG)
-
-run:clean $(OSIMG)
-	$(QEMU) $(OSIMG)
+run:clean os-img
+	$(QEMU) os-img 
 
 clean:
 	rm -rf *.bin *.o *.dis $(OSIMG)

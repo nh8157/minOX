@@ -26,10 +26,10 @@ load_kernel:
 	CALL	disk_load
 	RET
 
-%include "print.asm"
-%include "disk.asm"
-%include "gdt.asm"
-%include "switch_to_32.asm"
+%include "boot/print.asm"
+%include "boot/disk.asm"
+%include "boot/gdt.asm"
+%include "boot/switch_to_32.asm"
 
 BOOT_DRIVE: 	DB 0x0
 BOOT_MSG:		DB "minOX BOOTING IN 16-BIT MODE...", 0x0a, 0
