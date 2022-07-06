@@ -8,6 +8,7 @@ CC=gcc
 CC_FLAG=-m32 -fno-PIC -ffreestanding -c
 LN=ld 
 LN_FLAG=-no-PIE -m elf_i386 -Ttext 0x1000 --oformat binary
+DISASMB=ndisasm
 QEMU=qemu-system-x86_64
 MERGER=cat
 
@@ -22,6 +23,9 @@ all:os-img
 %.bin:%.asm
 	$(NS) $< $(NS_FLAG_BIN) $@
 
+%.dis:%.bin
+	$(DISASMB) -b 32 $^ > $@
+
 kernel.bin:boot/kernel_entry.o ${OBJ}
 	$(LN) $(LN_FLAG) $^ -o $@
 
@@ -32,4 +36,4 @@ run:clean os-img
 	$(QEMU) os-img 
 
 clean:
-	rm -rf *.bin *.o *.dis os-img **/*.bin **/*.o
+	rm -rf os-img ./*.bin ./*.o **/*.bin **/*.o
