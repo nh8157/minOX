@@ -31,8 +31,8 @@ init_32:
     CALL    BEGIN_PM
 
 BEGIN_PM:
-;    MOV     EBX, MSG_PM_FIN
-;    CALL    print_string_32
+    MOV     EBX, MSG_PM_FIN
+    CALL    print_string_32
 
 	CALL	KERNEL_OFFSET
     JMP     $

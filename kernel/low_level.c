@@ -1,3 +1,4 @@
+#include "../drivers/low_level.h"
 // short is 2 bytes
 // This function is for reading a byte from a specific IO port
 unsigned char port_byte_in(unsigned short port) {
@@ -19,6 +20,6 @@ unsigned short port_word_in(unsigned short port) {
 	return result;
 }
 
-void port_byte_out(unsigned short port, unsigned short, word) {
+void port_word_out(unsigned short port, unsigned short word) {
 	__asm__("out %%ax, %%dx" : : "a"(word), "d"(port));
 }
